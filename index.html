@@ -3,72 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Catálogo de Produtos</title>
-  <style>
-    /* Estilos gerais (mantidos iguais) */
-    /* ... */
-  </style>
+  <title>Minha Loja Online</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Meu Catálogo de Produtos</h1>
-  <div class="catalog" id="productCatalog">
-    <!-- Aqui o JavaScript preencherá os produtos -->
-  </div>
+  <!-- Conteúdo da página de e-commerce -->
+  <header>
+    <h1>Minha Loja Online</h1>
+  </header>
 
-  <script>
-    // Função para fazer uma consulta GraphQL
-    async function fetchGraphQL(query) {
-      const response = await fetch('URL_DA_SUA_API_GRAPHQL', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer SEU_TOKEN_DE_AUTORIZACAO' // Se necessário
-        },
-        body: JSON.stringify({ query })
-      });
+  <section class="products">
+    <div class="product">
+      <img src="images/product1.jpg" alt="Produto 1">
+      <h2>Produto 1</h2>
+      <p>Descrição do Produto 1.</p>
+      <p>Preço: R$99,99</p>
+      <button>Adicionar ao Carrinho</button>
+    </div>
 
-      const data = await response.json();
-      return data;
-    }
+    <!-- Adicione mais produtos aqui -->
 
-    // Função para montar o HTML do produto com os dados retornados pela API
-    function createProductHTML(product) {
-      return `
-        <div class="product">
-          <img src="${product.image}" alt="${product.name}">
-          <h2>${product.name}</h2>
-          <p>${product.description}</p>
-          <p>Preço: R$${product.price}</p>
-        </div>
-      `;
-    }
+  </section>
 
-    // Função para exibir os produtos no catálogo
-    async function displayProducts() {
-      const query = `
-        query {
-          products {
-            name
-            description
-            image
-            price
-          }
-        }
-      `;
-
-      try {
-        const { data } = await fetchGraphQL(query);
-        const products = data.products;
-
-        const productCatalog = document.getElementById('productCatalog');
-        productCatalog.innerHTML = products.map(createProductHTML).join('');
-      } catch (error) {
-        console.error('Erro ao obter os produtos:', error);
-      }
-    }
-
-    // Chamar a função para exibir os produtos no carregamento da página
-    displayProducts();
-  </script>
+  <footer>
+    <p>&copy; 2023 Minha Loja Online. Todos os direitos reservados.</p>
+  </footer>
 </body>
 </html>
