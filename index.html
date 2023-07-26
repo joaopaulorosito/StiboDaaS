@@ -1,64 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GraphQL Data</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Catálogo de Produtos</title>
+  <style>
+    /* Estilos gerais (mantidos iguais) */
+    /* ... */
+  </style>
 </head>
 <body>
-    <div id="books-list">
-        <!-- Os livros serão exibidos aqui -->
-    </div>
-    <script>
-        // Função para fazer a solicitação GraphQL
-        function fetchGraphQLData() {
-            const endpoint = 'https://daas-presales-demo-1.daas.stibosystems.com/api/services/LatamPresales/graphql/api'; // Substitua pela sua própria URL da API GraphQL
-            const token = 'V2s0QjdUc3hlQ0tOM2RMZVJ4eG96dm92dzB1dDZ5bjZFVThwTGlZZERiNHlndEhrZ1BKVXFUZ3djcnkxcjlWNXJMMVZsSjQvdXRsZjd0cz0='; // Adicione seu token de autorização (se necessário)
+  <h1>Meu Catálogo de Produtos</h1>
+  <div class="catalog" id="productCatalog">
+    <!-- Aqui o JavaScript preencherá os produtos -->
+  </div>
 
-            const query = `
-            query{
-  produtosVenda (scope: "LatamDemo,Context3" first:15 after:"")
-  {
-  pageInfo {     
-    hasNextPage     
-    endCursor   
-  } 
-  pageElements {
-    id    
-    name		
-    EAN 
-    CriadorRegistro    
-    DescricaoCurta   }  
-  }
-}
-            `;
+  <script>
+    // Função para fazer uma consulta GraphQL
+    async function fetchGraphQL(query) {
+      const response = await fetch('URL_DA_SUA_API_GRAPHQL', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer SEU_TOKEN_DE_AUTORIZACAO' // Se necessário
+        },
+        body: JSON.stringify({ query })
+      });
 
-            fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'x-functions-key': `${token}` // Adicione o token de autorização (se necessário)
-                },
-                body: JSON.stringify({ query })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const repository = data.data.repository;
-                const booksList = document.getElementById('books-list');
+      const data = await response.json();
+      return data;
+    }
 
-                // Crie e adicione os elementos na página
-                const bookElement = document.createElement('div');
-                bookElement.innerHTML = `
-                    <h2>${repository.name}</h2>
-                    <p>${repository.description}</p>
-                    <p>Estrelas: ${repository.stargazerCount}</p>
-                `;
+    // Função para montar o HTML do produto com os dados retornados pela API
+    function createProductHTML(product) {
+      return `
+        <div class="product">
+          <img src="${product.image}" alt="${product.name}">
+          <h2>${product.name}</h2>
+          <p>${product.description}</p>
+          <p>Preço: R$${product.price}</p>
+        </div>
+      `;
+    }
 
-                booksList.appendChild(bookElement);
-            })
-            .catch(error => console.error('Erro:', error));
+    // Função para exibir os produtos no catálogo
+    async function displayProducts() {
+      const query = `
+        query {
+          products {
+            name
+            description
+            image
+            price
+          }
         }
+      `;
 
-        // Chame a função quando a página carregar
-        window.onload = fetchGraphQLData;
-    </script>
+      try {
+        const { data } = await fetchGraphQL(query);
+        const products = data.products;
+
+        const productCatalog = document.getElementById('productCatalog');
+        productCatalog.innerHTML = products.map(createProductHTML).join('');
+      } catch (error) {
+        console.error('Erro ao obter os produtos:', error);
+      }
+    }
+
+    // Chamar a função para exibir os produtos no carregamento da página
+    displayProducts();
+  </script>
 </body>
 </html>
